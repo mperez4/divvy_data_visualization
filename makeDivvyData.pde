@@ -1,17 +1,53 @@
+import de.fhpotsdam.unfolding.mapdisplay.*;
+import de.fhpotsdam.unfolding.utils.*;
+import de.fhpotsdam.unfolding.marker.*;
+import de.fhpotsdam.unfolding.tiles.*;
+import de.fhpotsdam.unfolding.interactions.*;
+import de.fhpotsdam.unfolding.ui.*;
+import de.fhpotsdam.unfolding.*;
+import de.fhpotsdam.unfolding.core.*;
+import de.fhpotsdam.unfolding.mapdisplay.shaders.*;
+import de.fhpotsdam.unfolding.data.*;
+import de.fhpotsdam.unfolding.geo.*;
+import de.fhpotsdam.unfolding.texture.*;
+import de.fhpotsdam.unfolding.events.*;
+import de.fhpotsdam.utils.*;
+import de.fhpotsdam.unfolding.providers.*;
+
+import java.util.Map;
+import java.util.Date;
+import de.fhpotsdam.unfolding.*;
+import de.fhpotsdam.unfolding.geo.*;
+import de.fhpotsdam.unfolding.utils.*;
+
+UnfoldingMap map;
+Location chicagoLocation = new Location(41.883, -87.632);
+
 // the max trips is the amount of trips we want to get.
-int max_trips = 10;
+int max_trips = 50;
 PVector[] to_station = new PVector[max_trips];
 PVector[] from_station = new PVector[max_trips];
+
 void setup() {
+  size(800, 600, P2D);
+  frameRate(60);
+  map = new UnfoldingMap(this, new OpenStreetMap.CloudmadeProvider("07db658f6f5d48148dd007fcace89a16", 124011 ));
+  map.zoomAndPanTo(chicagoLocation, 12);
+  MapUtils.createDefaultEventDispatcher(this, map);
   createPVectors();
+  for (int m = 0; m < to_station.length; m++) {
+    addMarkers(from_station[m].x, from_station[m].y, from_station[0].z, to_station[m].x, to_station[m].y, to_station[1].z);
+  }
 }
 void draw() {
+  background(230);
+  map.draw();
 }
 void createPVectors() {
   //lets load the stations data!
   JSONArray stationsJSON = loadJSONArray("http://data.olab.io/divvy/stations.json");  
   //through the api, lets load 10 trips!
-  JSONArray tripsJSON = loadJSONArray("http://data.olab.io/divvy/api.php?&page=0&rpp=10");
+  JSONArray tripsJSON = loadJSONArray("http://data.olab.io/divvy/api.php?&page=0&rpp="+max_trips);
   //we will now go through all the trips (see api)
   for (int i = 0; i < tripsJSON.size();i++) {    
     //load one trip at a time.
@@ -29,7 +65,7 @@ void createPVectors() {
       //grab the latitude and longitude of station[j]
       float latitude = stationJSON.getFloat("latitude");
       float longitude = stationJSON.getFloat("longitude");      
-      //see if the id matches the id from the trip[i] data, then add the coordinates to a PVector
+      //see if the id matches the id from the trip[i] data, then add the coordinates to a PVector      
       if (currentId == fromStationID) {
         //create PVector[] with to lat and lon from trip[i]'s from_station[i]
         from_station[i] = new PVector(latitude, longitude, 0.0);
@@ -39,12 +75,6 @@ void createPVectors() {
         to_station[i] = new PVector(latitude, longitude, 0.0);
       }
     }
-  }
-  //go through new PVectors that store the latitude, longitude and tripduration, though we might not use trip duration.............ttyl
-  //since we are going through the PVector[]s at the same time, they match and make a trip. as in from_station[1] matches to to_station[1] in a trip  
-  for (int e = 0; e < from_station.length; e++) {
-    println("trip#" + e + " from station at " + from_station[e].x + ", " + from_station[e].y);
-    println("trip#" + e + " to station at " + to_station[e].x + ", " + to_station[e].y);
   }
 }
 
