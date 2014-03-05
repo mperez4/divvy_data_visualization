@@ -5,7 +5,11 @@ void addMarkers(float from_lat, float from_lon, float from_tripduration, float t
   Location to_station = new Location(to_lat, to_lon);
   SimplePointMarker from_station_marker = new SimplePointMarker(from_station);
   SimplePointMarker to_station_marker = new SimplePointMarker(to_station);
+  SimpleLinesMarker connectionMarker = new SimpleLinesMarker(from_station, to_station);
+  to_station_marker.setColor(color(255, 0, 0, 100));
+  from_station_marker.setColor(color(0, 0, 250, 100));
   map.addMarkers(from_station_marker);
   map.addMarkers(to_station_marker);
+  map.addMarkers(connectionMarker);
 }
 

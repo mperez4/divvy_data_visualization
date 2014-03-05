@@ -24,12 +24,12 @@ UnfoldingMap map;
 Location chicagoLocation = new Location(41.883, -87.632);
 
 // the max trips is the amount of trips we want to get.
-int max_trips = 50;
+int max_trips = 90;
 PVector[] to_station = new PVector[max_trips];
 PVector[] from_station = new PVector[max_trips];
 
 void setup() {
-  size(800, 600, P2D);
+  size(800, 900, P2D);
   frameRate(60);
   map = new UnfoldingMap(this, new OpenStreetMap.CloudmadeProvider("07db658f6f5d48148dd007fcace89a16", 124011 ));
   map.zoomAndPanTo(chicagoLocation, 12);
